@@ -1,51 +1,27 @@
 package com.mycompany.invoise;
 
 import com.mycompany.invoise.controller.InvoiceControllerInterface;
+import com.mycompany.invoise.service.InvoiceServiceInterface;
+import com.mycompany.invoise.service.prefix.InvoiceServicePrefix;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.*;
 
-/**
- * Hello world!
- */
+@Configuration
+@ComponentScan(basePackages = {"com.mycompany.invoise.controller.web",
+        /*"com.mycompany.invoise.service.prefix",*/
+        "com.mycompany.invoise.repository.database"})
+@PropertySource("classpath:application.properties")
+
 public class App {
     public static void main(String[] args) {
-        /*
-        com.mycompany.invoise.controller.scan.InvoiceControllerDouchette
-Quel est la classe de service ? (number, prefix)
-com.mycompany.invoise.service.prefix.InvoiceServicePrefix
-Quel est la classe de repository ? (memory, database)
-com.mycompany.invoise.repository.memory.InvoiceRepositoryMemory
-         */
-
-/*
-        System.out.println("Quelle est la classe de controller ? (keyboard, web, douchette)");
-
-        Scanner sc = new Scanner(System.in);
-        String controllerClass = sc.nextLine();
-        System.out.println("Quel est la classe de service ? (number, prefix)");
-        String serviceClass = sc.nextLine();
-        System.out.println("Quel est la classe de repository ? (memory, database)");
-        String repositoryClass = sc.nextLine();
-
-        InvoiceControllerInterface invoiceController = null;
-        InvoiceServiceInterface invoiceService = null;
-        InvoiceRepositoryInterface invoiceRepository = null;
-
-        try {
-            invoiceController = (InvoiceControllerInterface) Class.forName(controllerClass).getDeclaredConstructor().newInstance();
-            invoiceService = (InvoiceServiceInterface) Class.forName(serviceClass).getDeclaredConstructor().newInstance();
-            invoiceRepository = (InvoiceRepositoryInterface) Class.forName(repositoryClass).getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        invoiceController.setInvoiceService(invoiceService);
-        invoiceService.setInvoiceRepository(invoiceRepository);*/
-
-
-        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        //ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        ApplicationContext context = new AnnotationConfigApplicationContext(App.class);
         InvoiceControllerInterface invoiceController = context.getBean(InvoiceControllerInterface.class);
         invoiceController.createInvoice();
+    }
+
+    @Bean
+    public InvoiceServiceInterface configureInvoiceService() {
+        return new InvoiceServicePrefix();
     }
 }
